@@ -16,14 +16,15 @@ import './App.css';
 const App = (props) => (
 	<AuthProvider>
 		<Router>
-			<MenuBar />
-			<Switch>
-				<Route exact path='/' component={Home} />
-				<AuthRoute exact path='/login' component={Login} />
-				<AuthRoute exact path='/register' component={Register} />
-				<Route exact path='/calendar' component={Appointments} />
-				<Route component={NotFound} />
-			</Switch>
+			<MenuBar>
+				<Switch>
+					<Route exact path='/' component={Home} />
+					<AuthRoute exact path='/login' component={Login} />
+					<AuthRoute exact path='/register' component={Register} />
+					<Route exact path='/calendar' component={Appointments} />
+					<Route component={NotFound} />
+				</Switch>
+			</MenuBar>
 		</Router>
 	</AuthProvider>
 );
