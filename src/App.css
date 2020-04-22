@@ -1,0 +1,27 @@
+.Pendiente {
+	background-color: orange;
+	color: white;
+}
+
+.Allday {
+	background-color: fuchsia;
+	color: white;
+}
+
+.Confirmada {
+	background-color: green;
+	color: white;
+}
+
+.Cancelada {
+	background-color: red;
+	color: white;
+}
+
+.Calendar {
+	display: flex !important;
+	align-self: end !important;
+	padding: 15px !important;
+	max-width: 780px !important;
+	max-height: 780px !important;
+}

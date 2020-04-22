@@ -145,7 +145,7 @@ const MenuBar = ({ children }) => {
 					>
 						<Menu />
 					</IconButton>
-					<Typography variant='p' noWrap>
+					<Typography variant='body1' noWrap>
 						Customer Management System
 					</Typography>
 				</Toolbar>
