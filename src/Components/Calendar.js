@@ -13,12 +13,14 @@ import '@fullcalendar/daygrid/main.min.css';
 import '@fullcalendar/timegrid/main.min.css';
 
 import { GET_APPOINTMENTS_QUERY } from '../Utils/Queries';
+import CalendarPlaceholder from '../Placeholders/CalendarPlaceholder';
 
 const Calendar = () => {
 	const calendarComponentRef = createRef();
 	const [appointments, setAppointments] = useState([]);
 	const [calendarWeekends, setWeekends] = useState(true);
 	const { loading, data } = useQuery(GET_APPOINTMENTS_QUERY);
+
 	useEffect(() => {
 		if (data) {
 			setAppointments(data.getAppointments);
@@ -48,11 +50,11 @@ const Calendar = () => {
 
 	return (
 		<>
-			{loading ? (
-				<h1>Loading appointments</h1>
-			) : (
-				<Paper elevation={3} square className='Calendar'>
-					<CssBaseline />
+			<Paper elevation={3} square className='Calendar'>
+				<CssBaseline />
+				{loading ? (
+					<CalendarPlaceholder />
+				) : (
 					<FullCalendar
 						defaultView='dayGridMonth'
 						customButtons={{
@@ -61,7 +63,7 @@ const Calendar = () => {
 								click: toggleWeekends,
 							},
 							custom2: {
-								text: 'Go to Past',
+								text: 'Go to Date',
 								click: gotoPast,
 							},
 						}}
@@ -77,8 +79,8 @@ const Calendar = () => {
 						eventClick={handleEventClick}
 						events={appointments}
 					/>
-				</Paper>
-			)}
+				)}
+			</Paper>
 		</>
 	);
 };

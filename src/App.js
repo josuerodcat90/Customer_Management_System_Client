@@ -9,6 +9,7 @@ import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Appointments from './Pages/Appointments';
+import Patients from './Pages/Patients';
 import NotFound from './Pages/404';
 
 import './App.css';
@@ -22,6 +23,7 @@ const App = (props) => (
 					<AuthRoute exact path='/login' component={Login} />
 					<AuthRoute exact path='/register' component={Register} />
 					<Route exact path='/calendar' component={Appointments} />
+					<Route exact path='/patients' component={Patients} />
 					<Route component={NotFound} />
 				</Switch>
 			</MenuBar>

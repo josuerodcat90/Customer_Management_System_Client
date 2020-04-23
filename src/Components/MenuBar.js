@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import {
 	Drawer,
 	AppBar,
@@ -14,7 +14,15 @@ import {
 	ListItemIcon,
 	ListItemText,
 } from '@material-ui/core';
-import { Menu, ChevronLeft, Home, CalendarToday, AccountBox, PersonAdd } from '@material-ui/icons';
+import {
+	Menu,
+	ChevronLeft,
+	Home,
+	CalendarToday,
+	AccountBox,
+	PersonAdd,
+	People,
+} from '@material-ui/icons';
 import { Link } from 'react-router-dom';
 
 const drawerWidth = 180;
@@ -105,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
 
 const MenuBar = ({ children }) => {
 	const classes = useStyles();
-	const theme = useTheme();
+	// const theme = useTheme();
 	const [open, setOpen] = useState(false);
 	const pathname = window.location.pathname;
 	const path = pathname === '/' ? 'home' : pathname.substr(1);
@@ -223,6 +231,19 @@ const MenuBar = ({ children }) => {
 							<PersonAdd />
 						</ListItemIcon>
 						<ListItemText primary={'Register'} />
+					</ListItem>
+					<ListItem
+						button
+						key={'Patients'}
+						component={Link}
+						to='/patients'
+						selected={selectedItem === 'patients'}
+						onClick={(event) => handleListItemClick(event, 'patients')}
+					>
+						<ListItemIcon>
+							<People />
+						</ListItemIcon>
+						<ListItemText primary={'Patients'} />
 					</ListItem>
 				</List>
 			</Drawer>
