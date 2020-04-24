@@ -13,20 +13,24 @@ import Patients from './Pages/Patients';
 import NotFound from './Pages/404';
 
 import './App.css';
+import { ThemeProvider } from '@material-ui/core';
+import { darkTheme } from './Utils/SystemThemes';
 
 const App = (props) => (
 	<AuthProvider>
 		<Router>
-			<MenuBar>
-				<Switch>
-					<Route exact path='/' component={Home} />
-					<AuthRoute exact path='/login' component={Login} />
-					<AuthRoute exact path='/register' component={Register} />
-					<Route exact path='/calendar' component={Appointments} />
-					<Route exact path='/patients' component={Patients} />
-					<Route component={NotFound} />
-				</Switch>
-			</MenuBar>
+			<ThemeProvider theme={darkTheme}>
+				<MenuBar>
+					<Switch>
+						<Route exact path='/' component={Home} />
+						<AuthRoute exact path='/login' component={Login} />
+						<AuthRoute exact path='/register' component={Register} />
+						<Route exact path='/calendar' component={Appointments} />
+						<Route exact path='/patients' component={Patients} />
+						<Route component={NotFound} />
+					</Switch>
+				</MenuBar>
+			</ThemeProvider>
 		</Router>
 	</AuthProvider>
 );

@@ -113,7 +113,6 @@ const useStyles = makeStyles((theme) => ({
 
 const MenuBar = ({ children }) => {
 	const classes = useStyles();
-	// const theme = useTheme();
 	const [open, setOpen] = useState(false);
 	const pathname = window.location.pathname;
 	const path = pathname === '/' ? 'home' : pathname.substr(1);
@@ -153,7 +152,7 @@ const MenuBar = ({ children }) => {
 					>
 						<Menu />
 					</IconButton>
-					<Typography variant='body1' noWrap>
+					<Typography variant='h6' noWrap>
 						Customer Management System
 					</Typography>
 				</Toolbar>
