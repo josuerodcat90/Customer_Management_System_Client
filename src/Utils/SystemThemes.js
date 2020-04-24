@@ -1,32 +1,18 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
-export const darkTheme = createMuiTheme({
-	palette: {
-		common: {
-			black: '#000000',
-			white: '#FFFFFF',
+export const systemTheme = ({ userTheme, userColor }) => {
+	const theme = createMuiTheme({
+		palette: {
+			common: {
+				black: '#000000',
+				white: '#FFFFFF',
+			},
+			type: userTheme ? 'dark' : 'light',
+			primary: {
+				main: userColor,
+			},
 		},
-		type: 'dark',
-		primary: {
-			main: '#606060',
-		},
-	},
-});
+	});
 
-export const lightTheme = createMuiTheme({
-	palette: {
-		common: {
-			black: '#000000',
-			white: '#FFFFFF',
-		},
-		type: 'light',
-		primary: {
-			main: '#D60093',
-			contrastText: '#fafafa',
-		},
-		secondary: {
-			main: '#FF4081',
-			contrastText: '#fafafa',
-		},
-	},
-});
+	return theme;
+};

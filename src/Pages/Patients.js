@@ -1,5 +1,5 @@
 import React from 'react';
-import PatientsTable from '../Components/PatientsTableAlt';
+import PatientsTable from '../Components/PatientsTable';
 
 const Patients = () => {
 	return (
