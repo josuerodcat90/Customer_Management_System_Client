@@ -1,22 +1,41 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
+import Collapse from '@material-ui/core/Collapse';
+import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { LOGIN_USER_MUTATION } from '../Utils/Mutations';
+import { useMutation } from '@apollo/react-hooks';
+
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../Context/Auth';
+import { store } from 'react-notifications-component';
+import 'react-notifications-component/dist/theme.css';
+import 'animate.css';
+
+import { useForm } from '../Utils/Hooks';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
 		height: '100vh',
+	},
+	errors: {
+		marginTop: theme.spacing(2),
+		marginBottom: theme.spacing(2),
+	},
+	backdrop: {
+		zIndex: theme.zIndex.drawer + 1,
+		color: '#fff',
 	},
 	links: {
 		textDecoration: 'none',
@@ -52,8 +71,56 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const Login = () => {
+const Login = (props) => {
 	const classes = useStyles();
+	const context = useContext(AuthContext);
+	const [open, setOpen] = useState(false);
+	const [errors, setErrors] = useState({});
+
+	const { handleChange, handleSubmit, values } = useForm(registerUserCallback, {
+		email: '',
+		password: '',
+	});
+
+	const [loginUser] = useMutation(LOGIN_USER_MUTATION, {
+		update(_, { data: { login: userData } }) {
+			context.login(userData);
+			props.history.push('/');
+
+			const { firstname, lastname } = userData;
+
+			store.addNotification({
+				title: `Welcome ${firstname + ' ' + lastname}!`,
+				message: "You're now online",
+				type: 'success',
+				insert: 'top',
+				showIcon: true,
+				container: 'bottom-right',
+				animationIn: ['animated', 'slideInRight'],
+				animationOut: ['animated', 'fadeOut'],
+				dismiss: {
+					duration: 4000,
+					onScreen: true,
+					pauseOnHover: true,
+				},
+			});
+		},
+		onError(err) {
+			setErrors(err.graphQLErrors[0].extensions.exception.errors);
+		},
+		variables: values,
+	});
+
+	function registerUserCallback() {
+		loginUser();
+		setErrors({});
+		setOpen(!open);
+	}
+
+	const resetErrors = () => {
+		setErrors({});
+		setOpen(false);
+	};
 
 	const Copyright = () => {
 		return (
@@ -86,7 +153,7 @@ const Login = () => {
 						<Typography component='h1' variant='h5'>
 							Sign in
 						</Typography>
-						<form className={classes.form} noValidate>
+						<form className={classes.form} noValidate onSubmit={handleSubmit}>
 							<TextField
 								variant='outlined'
 								margin='normal'
@@ -97,6 +164,9 @@ const Login = () => {
 								name='email'
 								autoComplete='email'
 								autoFocus
+								onFocus={resetErrors}
+								error={errors.email ? true : false}
+								onChange={handleChange}
 							/>
 							<TextField
 								variant='outlined'
@@ -107,11 +177,10 @@ const Login = () => {
 								label='Password'
 								type='password'
 								id='password'
+								onFocus={resetErrors}
 								autoComplete='current-password'
-							/>
-							<FormControlLabel
-								control={<Checkbox value='remember' color='primary' />}
-								label='Remember me'
+								error={errors.password ? true : false}
+								onChange={handleChange}
 							/>
 							<Button
 								type='submit'
@@ -122,6 +191,28 @@ const Login = () => {
 							>
 								Sign In
 							</Button>
+							{Object.keys(errors).length > 0 && (
+								<div classNamee={classes.errors}>
+									{Object.values(errors).map((value) => (
+										<Collapse in={true}>
+											<Alert severity='error' key={value}>
+												{value}
+											</Alert>
+										</Collapse>
+									))}
+								</div>
+							)}
+							{Object.values(errors).length < 1 && (
+								<Backdrop
+									className={classes.backdrop}
+									open={open}
+									onClick={() => {
+										setOpen(!open);
+									}}
+								>
+									<CircularProgress color='inherit' />
+								</Backdrop>
+							)}
 							<Grid container>
 								<Grid item xs>
 									<Typography
