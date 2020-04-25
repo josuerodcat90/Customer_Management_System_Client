@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -36,6 +36,7 @@ import {
 	Brightness7,
 	Brightness4,
 } from '@material-ui/icons';
+import { AuthContext } from '../Context/Auth';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Link } from 'react-router-dom';
 import UserThemeProvider from './UserThemeProvider';
@@ -148,7 +149,7 @@ const MenuBar = ({ children }) => {
 	const [open, setOpen] = useState(false);
 	const [openDialog, setOpenDialog] = useState(false);
 	const [selectedItem, setSelectedItem] = useState(path);
-	const [user, setUser] = useState(false);
+	const { user, logout } = useContext(AuthContext);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [sysTheme, setSysTheme] = useState(true);
 	const [sysColor, setSysColor] = useState('#008B02');
@@ -176,6 +177,11 @@ const MenuBar = ({ children }) => {
 
 	const handleClose = () => {
 		setAnchorEl(null);
+	};
+
+	const handleLogout = () => {
+		handleClose();
+		logout();
 	};
 
 	const handleListItemClick = (event, index) => {
@@ -325,7 +331,7 @@ const MenuBar = ({ children }) => {
 									onClose={handleClose}
 								>
 									<MenuItem onClick={handleClose}>Profile</MenuItem>
-									<MenuItem onClick={handleClose}>My account</MenuItem>
+									<MenuItem onClick={handleLogout}>Logout</MenuItem>
 								</Menu>
 							</Toolbar>
 						</AppBar>
