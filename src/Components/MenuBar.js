@@ -8,6 +8,7 @@ import {
 	MenuItem,
 	AppBar,
 	Toolbar,
+	Tooltip,
 	List,
 	Switch,
 	FormGroup,
@@ -155,6 +156,10 @@ const MenuBar = ({ children }) => {
 		setSysColor(color.hex);
 	};
 
+	const handleSwithcChange = () => {
+		setSysTheme(!sysTheme);
+	};
+
 	const handleDialogOpen = () => {
 		setOpenDialog(true);
 	};
@@ -184,10 +189,6 @@ const MenuBar = ({ children }) => {
 		setOpen(false);
 	};
 
-	const handleSwithcChange = () => {
-		setSysTheme(!sysTheme);
-	};
-
 	return (
 		<UserThemeProvider userTheme={sysTheme} userColor={sysColor}>
 			<div className={classes.root}>
@@ -213,14 +214,16 @@ const MenuBar = ({ children }) => {
 						<Typography variant='h6' noWrap className={classes.title}>
 							Customer Management System
 						</Typography>
-						<IconButton
-							edge='start'
-							color='inherit'
-							aria-label='open drawer'
-							onClick={handleDialogOpen}
-						>
-							{sysTheme ? <Brightness4 /> : <Brightness7 />}
-						</IconButton>
+						<Tooltip title='Theme & color'>
+							<IconButton
+								edge='start'
+								color='inherit'
+								aria-label='open drawer'
+								onClick={handleDialogOpen}
+							>
+								{sysTheme ? <Brightness4 /> : <Brightness7 />}
+							</IconButton>
+						</Tooltip>
 						<Dialog
 							onClose={handleDialogClose}
 							aria-labelledby='customized-dialog-title'
@@ -291,15 +294,17 @@ const MenuBar = ({ children }) => {
 								</Grid>
 							</DialogContent>
 						</Dialog>
-						<IconButton
-							aria-label='account of current user'
-							aria-controls='menu-appbar'
-							aria-haspopup='true'
-							onClick={handleMenu}
-							color='inherit'
-						>
-							<AccountCircle />
-						</IconButton>
+						<Tooltip title='Profile'>
+							<IconButton
+								aria-label='account of current user'
+								aria-controls='menu-appbar'
+								aria-haspopup='true'
+								onClick={handleMenu}
+								color='inherit'
+							>
+								<AccountCircle />
+							</IconButton>
+						</Tooltip>
 						<Menu
 							id='menu-appbar'
 							anchorEl={anchorEl}
