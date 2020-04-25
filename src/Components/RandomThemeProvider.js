@@ -20,9 +20,9 @@ const RandomThemeProvider = ({ children }) => {
 		'#ffeb3b',
 		'#ffc107',
 	];
-	const themes = ['light', 'dark'];
+	// const themes = ['light', 'dark'];
 
-	const randomTheme = themes[~~(Math.random() * themes.length)];
+	// const randomTheme = themes[~~(Math.random() * themes.length)];
 	const randomColor = colors[~~(Math.random() * colors.length)];
 
 	const theme = createMuiTheme({
@@ -31,7 +31,7 @@ const RandomThemeProvider = ({ children }) => {
 				black: '#000000',
 				white: '#FFFFFF',
 			},
-			type: randomTheme,
+			type: 'dark',
 			primary: {
 				main: randomColor,
 			},
