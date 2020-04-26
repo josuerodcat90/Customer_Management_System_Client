@@ -10,8 +10,6 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
-import Collapse from '@material-ui/core/Collapse';
-import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { LOGIN_USER_MUTATION } from '../Utils/Mutations';
@@ -35,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
 	backdrop: {
 		zIndex: theme.zIndex.drawer + 1,
 		color: '#fff',
+	},
+	hidden: {
+		display: 'none',
 	},
 	links: {
 		textDecoration: 'none',
@@ -190,17 +191,25 @@ const Login = (props) => {
 							>
 								Sign In
 							</Button>
-							{Object.keys(errors).length > 0 && (
-								<div classNamee={classes.errors}>
-									{Object.values(errors).map((value) => (
-										<Collapse in={true}>
-											<Alert severity='error' key={value}>
-												{value}
-											</Alert>
-										</Collapse>
-									))}
-								</div>
-							)}
+							<div className={classes.hidden}>
+								{Object.keys(errors).length > 0 &&
+									Object.values(errors).map((value) => {
+										return store.addNotification({
+											title: 'Error',
+											message: value,
+											type: 'danger',
+											insert: 'bottom',
+											container: 'bottom-right',
+											animationIn: ['animated', 'slideInUp'],
+											animationOut: ['animated', 'slideOutDown'],
+											dismiss: {
+												duration: 5000,
+												onScreen: false,
+												showIcon: true,
+											},
+										});
+									})}
+							</div>
 							{Object.values(errors).length < 1 && (
 								<Backdrop
 									className={classes.backdrop}

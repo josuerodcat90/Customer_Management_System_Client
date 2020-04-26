@@ -10,8 +10,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Collapse from '@material-ui/core/Collapse';
-import { Alert } from '@material-ui/lab';
 import Container from '@material-ui/core/Container';
 
 import { store } from 'react-notifications-component';
@@ -33,7 +31,10 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: 'center',
 	},
 	errors: {
-		padding: '15px',
+		padding: theme.spacing(3),
+	},
+	hidden: {
+		display: 'none',
 	},
 	links: {
 		textDecoration: 'none',
@@ -222,17 +223,25 @@ const Register = (props) => {
 						>
 							Sign Up
 						</Button>
-						{Object.keys(errors).length > 0 && (
-							<div classNamee={classes.errors}>
-								{Object.values(errors).map((value) => (
-									<Collapse in={true}>
-										<Alert severity='error' key={value}>
-											{value}
-										</Alert>
-									</Collapse>
-								))}
-							</div>
-						)}
+						<div className={classes.hidden}>
+							{Object.keys(errors).length > 0 &&
+								Object.values(errors).map((value) => {
+									return store.addNotification({
+										title: 'Error',
+										message: value,
+										type: 'danger',
+										insert: 'bottom',
+										container: 'top-right',
+										animationIn: ['animated', 'slideInDown'],
+										animationOut: ['animated', 'slideOutRight'],
+										dismiss: {
+											duration: 5000,
+											onScreen: false,
+											showIcon: true,
+										},
+									});
+								})}
+						</div>
 						{Object.values(errors).length < 1 && (
 							<Backdrop
 								className={classes.backdrop}
