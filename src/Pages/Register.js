@@ -1,16 +1,29 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import Collapse from '@material-ui/core/Collapse';
+import { Alert } from '@material-ui/lab';
 import Container from '@material-ui/core/Container';
 
+import { store } from 'react-notifications-component';
+import 'react-notifications-component/dist/theme.css';
+import 'animate.css';
+
 import { Link } from 'react-router-dom';
+import { useMutation } from '@apollo/react-hooks';
+import { CREATE_USER_MUTATION } from '../Utils/Mutations';
+
+import { AuthContext } from '../Context/Auth';
+import { useForm } from '../Utils/Hooks';
 
 const useStyles = makeStyles((theme) => ({
 	paper: {
@@ -18,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 		flexDirection: 'column',
 		alignItems: 'center',
+	},
+	errors: {
+		padding: '15px',
 	},
 	links: {
 		textDecoration: 'none',
@@ -38,8 +54,59 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const Register = () => {
+const Register = (props) => {
 	const classes = useStyles();
+	const context = useContext(AuthContext);
+	const [open, setOpen] = useState(false);
+	const [errors, setErrors] = useState({});
+
+	const { handleChange, handleSubmit, values } = useForm(registerUser, {
+		firstname: '',
+		lastname: '',
+		email: '',
+		password: '',
+		confirmPassword: '',
+	});
+
+	const [addUser] = useMutation(CREATE_USER_MUTATION, {
+		update(_, { data: { createUser: userData } }) {
+			context.login(userData);
+			props.history.push('/');
+
+			const { email } = userData;
+
+			store.addNotification({
+				title: `Your Email ${email} is registered succesfully!`,
+				message: "And now, you're online",
+				type: 'info',
+				insert: 'top',
+				showIcon: true,
+				container: 'top-center',
+				animationIn: ['animated', 'slideInDown'],
+				animationOut: ['animated', 'slideOutUp'],
+				dismiss: {
+					duration: 4000,
+					onScreen: true,
+					pauseOnHover: true,
+				},
+			});
+		},
+		onError(err) {
+			setErrors(err.graphQLErrors[0].extensions.exception.errors);
+		},
+		variables: values,
+	});
+
+	function registerUser() {
+		addUser();
+		setErrors({});
+		setOpen(!open);
+	}
+
+	const resetErrors = () => {
+		setErrors({});
+		setOpen(false);
+	};
 
 	const Copyright = () => {
 		return (
@@ -70,18 +137,21 @@ const Register = () => {
 					<Typography component='h1' variant='h5'>
 						Sign up
 					</Typography>
-					<form className={classes.form} noValidate>
+					<form className={classes.form} noValidate onSubmit={handleSubmit}>
 						<Grid container spacing={2}>
 							<Grid item xs={12} sm={6}>
 								<TextField
 									autoComplete='fname'
-									name='firstName'
+									name='firstname'
 									variant='outlined'
 									required
 									fullWidth
 									id='firstName'
 									label='First Name'
 									autoFocus
+									onFocus={resetErrors}
+									error={errors.firstname ? true : false}
+									onChange={handleChange}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={6}>
@@ -91,8 +161,11 @@ const Register = () => {
 									fullWidth
 									id='lastName'
 									label='Last Name'
-									name='lastName'
+									name='lastname'
 									autoComplete='lname'
+									onFocus={resetErrors}
+									error={errors.lastname ? true : false}
+									onChange={handleChange}
 								/>
 							</Grid>
 							<Grid item xs={12}>
@@ -104,6 +177,9 @@ const Register = () => {
 									label='Email Address'
 									name='email'
 									autoComplete='email'
+									onFocus={resetErrors}
+									error={errors.email ? true : false}
+									onChange={handleChange}
 								/>
 							</Grid>
 							<Grid item xs={12}>
@@ -116,6 +192,9 @@ const Register = () => {
 									type='password'
 									id='password'
 									autoComplete='current-password'
+									onFocus={resetErrors}
+									error={errors.password ? true : false}
+									onChange={handleChange}
 								/>
 							</Grid>
 							<Grid item xs={12}>
@@ -128,6 +207,9 @@ const Register = () => {
 									type='password'
 									id='confirm-password'
 									autoComplete='current-password'
+									onFocus={resetErrors}
+									error={errors.confirmPassword ? true : false}
+									onChange={handleChange}
 								/>
 							</Grid>
 						</Grid>
@@ -140,6 +222,28 @@ const Register = () => {
 						>
 							Sign Up
 						</Button>
+						{Object.keys(errors).length > 0 && (
+							<div classNamee={classes.errors}>
+								{Object.values(errors).map((value) => (
+									<Collapse in={true}>
+										<Alert severity='error' key={value}>
+											{value}
+										</Alert>
+									</Collapse>
+								))}
+							</div>
+						)}
+						{Object.values(errors).length < 1 && (
+							<Backdrop
+								className={classes.backdrop}
+								open={open}
+								onClick={() => {
+									setOpen(!open);
+								}}
+							>
+								<CircularProgress color='inherit' />
+							</Backdrop>
+						)}
 						<Grid container justify='flex-end'>
 							<Grid item>
 								<Typography className={classes.links} component={Link} to='/login' variant='body2'>

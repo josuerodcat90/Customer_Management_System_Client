@@ -30,8 +30,7 @@ const useStyles = makeStyles((theme) => ({
 		height: '100vh',
 	},
 	errors: {
-		marginTop: theme.spacing(2),
-		marginBottom: theme.spacing(2),
+		padding: theme.spacing(3),
 	},
 	backdrop: {
 		zIndex: theme.zIndex.drawer + 1,
