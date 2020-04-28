@@ -11,7 +11,7 @@ const UserThemeProvider = ({ children, userColor, userTheme }) => {
 			},
 			type: userTheme ? 'dark' : 'light',
 			primary: {
-				main: userColor,
+				main: userColor ? userColor : '#303f9f',
 			},
 		},
 	});

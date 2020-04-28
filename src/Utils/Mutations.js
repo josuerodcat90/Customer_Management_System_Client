@@ -7,6 +7,8 @@ export const LOGIN_USER_MUTATION = gql`
 			firstname
 			lastname
 			userIcon
+			userColor
+			userTheme
 			range
 			bachTitle
 			token
@@ -35,6 +37,40 @@ export const CREATE_USER_MUTATION = gql`
 			firstname
 			lastname
 			userIcon
+			userColor
+			userTheme
+			range
+			bachTitle
+			token
+		}
+	}
+`;
+
+export const CHANGE_USER_COLOR_MUTATION = gql`
+	mutation changeSysColor($userId: ID!, $userColor: String!) {
+		changeSysColor(userId: $userId, input: { userColor: $userColor }) {
+			_id
+			firstname
+			lastname
+			userIcon
+			userColor
+			userTheme
+			range
+			bachTitle
+			token
+		}
+	}
+`;
+
+export const CHANGE_USER_THEME_MUTATION = gql`
+	mutation changeSysTheme($userId: ID!, $userTheme: Boolean!) {
+		changeSysTheme(userId: $userId, input: { userTheme: $userTheme }) {
+			_id
+			firstname
+			lastname
+			userIcon
+			userColor
+			userTheme
 			range
 			bachTitle
 			token

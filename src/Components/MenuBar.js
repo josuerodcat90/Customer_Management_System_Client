@@ -1,7 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { useMutation } from '@apollo/react-hooks';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
+	Avatar,
+	Badge,
 	Drawer,
 	Menu,
 	Grid,
@@ -26,12 +29,10 @@ import {
 } from '@material-ui/core';
 import {
 	ChevronLeft,
-	AccountCircle,
 	Close,
 	Home,
 	CalendarToday,
-	AccountBox,
-	PersonAdd,
+	AccountCircle,
 	People,
 	Brightness7,
 	Brightness4,
@@ -39,9 +40,15 @@ import {
 import { AuthContext } from '../Context/Auth';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Link } from 'react-router-dom';
+import { systemColors } from '../Utils/SystemColors';
 import UserThemeProvider from './UserThemeProvider';
 import RandomThemeProvider from './RandomThemeProvider';
 import { CirclePicker } from 'react-color';
+import { store } from 'react-notifications-component';
+import 'react-notifications-component/dist/theme.css';
+import 'animate.css';
+
+import { CHANGE_USER_COLOR_MUTATION, CHANGE_USER_THEME_MUTATION } from '../Utils/Mutations';
 
 const drawerWidth = 180;
 
@@ -49,6 +56,16 @@ const useStyles = makeStyles((theme) => ({
 	root: {
 		display: 'flex',
 		flexGrow: 1,
+	},
+	dialogtitle: {
+		textAlign: 'center',
+	},
+	hidden: {
+		display: 'none',
+	},
+	avatar: {
+		color: theme.palette.common.black,
+		backgroundColor: theme.palette.common.white,
 	},
 	title: {
 		flexGrow: 1,
@@ -94,6 +111,9 @@ const useStyles = makeStyles((theme) => ({
 		width: drawerWidth,
 		flexShrink: 0,
 		whiteSpace: 'nowrap',
+	},
+	menu: {
+		marginTop: theme.spacing(7),
 	},
 	drawerOpen: {
 		width: drawerWidth,
@@ -142,25 +162,127 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
+const StyledBadge = withStyles((theme) => ({
+	badge: {
+		backgroundColor: '#44b700',
+		color: '#44b700',
+		boxShadow: `0 0 0 1px ${theme.palette.common.black}`,
+		'&::after': {
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			width: '100%',
+			height: '100%',
+			borderRadius: '50%',
+			animation: '$ripple 1.2s infinite ease-in-out',
+			border: '1px solid currentColor',
+			content: '""',
+		},
+	},
+	'@keyframes ripple': {
+		'0%': {
+			transform: 'scale(.8)',
+			opacity: 1,
+		},
+		'100%': {
+			transform: 'scale(2.4)',
+			opacity: 0,
+		},
+	},
+}))(Badge);
+
 const MenuBar = ({ children }) => {
 	const classes = useStyles();
+	const context = useContext(AuthContext);
+	const { user, logout } = useContext(AuthContext);
+	const [sysTheme, setSysTheme] = useState(false);
+	const [sysColor, setSysColor] = useState('');
+	const [errors, setErrors] = useState({});
 	const pathname = window.location.pathname;
 	const path = pathname === '/' ? 'home' : pathname.substr(1);
 	const [open, setOpen] = useState(false);
 	const [openDialog, setOpenDialog] = useState(false);
 	const [selectedItem, setSelectedItem] = useState(path);
-	const { user, logout } = useContext(AuthContext);
 	const [anchorEl, setAnchorEl] = useState(null);
-	const [sysTheme, setSysTheme] = useState(true);
-	const [sysColor, setSysColor] = useState('#008B02');
 	const openMenu = Boolean(anchorEl);
 
-	const handleColorChange = (color, event) => {
-		setSysColor(color.hex);
+	useEffect(() => {
+		if (user) {
+			const { userColor, userTheme } = user;
+
+			setSysColor(userColor);
+			setSysTheme(userTheme);
+		}
+	}, [user]);
+
+	const [changeSysColor] = useMutation(CHANGE_USER_COLOR_MUTATION, {
+		update(_, { data: { changeSysColor: userData } }) {
+			context.login(userData);
+
+			store.addNotification({
+				title: 'System Color',
+				message: 'System Color changed',
+				type: 'info',
+				insert: 'top',
+				showIcon: true,
+				container: 'bottom-right',
+				animationIn: ['animated', 'slideInUp'],
+				animationOut: ['animated', 'slideOutDown'],
+				dismiss: {
+					duration: 2000,
+					onScreen: true,
+					pauseOnHover: false,
+				},
+			});
+		},
+		onError(err) {
+			setErrors(err.graphQLErrors[0].extensions.exception.errors);
+		},
+		variables: {
+			userId: user ? user._id : '',
+			userColor: sysColor,
+		},
+	});
+
+	const [changeSysTheme] = useMutation(CHANGE_USER_THEME_MUTATION, {
+		update(_, { data: { changeSysTheme: userData } }) {
+			context.login(userData);
+			const { userTheme } = userData;
+			const message = <strong>{`Dark mode ${userTheme ? 'ON' : 'OFF'}`}</strong>;
+
+			store.addNotification({
+				title: 'Dark Mode',
+				message: message,
+				type: 'info',
+				insert: 'top',
+				showIcon: true,
+				container: 'bottom-right',
+				animationIn: ['animated', 'slideInUp'],
+				animationOut: ['animated', 'slideOutDown'],
+				dismiss: {
+					duration: 2000,
+					onScreen: true,
+					pauseOnHover: false,
+				},
+			});
+		},
+		onError(err) {
+			setErrors(err.graphQLErrors[0].extensions.exception.errors);
+		},
+		variables: {
+			userId: user ? user._id : '',
+			userTheme: sysTheme,
+		},
+	});
+
+	const handleColorChange = async (color, event) => {
+		await setSysColor(color.hex);
+		changeSysColor();
 	};
 
-	const handleSwithcChange = () => {
-		setSysTheme(!sysTheme);
+	const handleSwithcChange = async () => {
+		await setSysTheme(!sysTheme);
+		changeSysTheme();
 	};
 
 	const handleDialogOpen = () => {
@@ -224,7 +346,7 @@ const MenuBar = ({ children }) => {
 								<Typography variant='h6' noWrap className={classes.title}>
 									Customer Management System
 								</Typography>
-								<Tooltip title='Theme & color'>
+								<Tooltip title='Color & Theme'>
 									<IconButton
 										edge='start'
 										color='inherit'
@@ -240,10 +362,13 @@ const MenuBar = ({ children }) => {
 									open={openDialog}
 									fullWidth={true}
 									maxWidth='sm'
-									titleStyle={{ textAlign: 'center' }}
 								>
-									<DialogTitle id='customized-dialog-title' onClose={handleDialogClose}>
-										Configuraciones de tema y color
+									<DialogTitle
+										id='customized-dialog-title'
+										className={classes.dialogtitle}
+										onClose={handleDialogClose}
+									>
+										Color and Theme Settings
 										<IconButton
 											aria-label='close'
 											className={classes.closeButton}
@@ -265,23 +390,7 @@ const MenuBar = ({ children }) => {
 												<CirclePicker
 													circleSize={30}
 													color={sysColor}
-													colors={[
-														'#008B02',
-														'#f44336',
-														'#e91e63',
-														'#9c27b0',
-														'#673ab7',
-														'#3f51b5',
-														'#2196f3',
-														'#03a9f4',
-														'#00bcd4',
-														'#009688',
-														'#4caf50',
-														'#8bc34a',
-														'#cddc39',
-														'#ffeb3b',
-														'#ffc107',
-													]}
+													colors={systemColors}
 													onChange={handleColorChange}
 												/>
 											</Grid>
@@ -296,7 +405,7 @@ const MenuBar = ({ children }) => {
 																color='primary'
 															/>
 														}
-														label={`Modo ${sysTheme ? 'Oscuro' : 'Claro'}`}
+														label={`${sysTheme ? 'Dark' : 'Light'} Mode`}
 														labelPlacement='top'
 													/>
 												</FormGroup>
@@ -312,12 +421,28 @@ const MenuBar = ({ children }) => {
 										onClick={handleMenu}
 										color='inherit'
 									>
-										<AccountCircle />
+										<StyledBadge
+											overlap='circle'
+											anchorOrigin={{
+												vertical: 'bottom',
+												horizontal: 'right',
+											}}
+											variant='dot'
+										>
+											{user ? (
+												<Avatar className={classes.avatar}>{`${
+													user.firstname.charAt(0) + user.lastname.charAt(0)
+												}`}</Avatar>
+											) : (
+												<AccountCircle />
+											)}
+										</StyledBadge>
 									</IconButton>
 								</Tooltip>
 								<Menu
 									id='menu-appbar'
 									anchorEl={anchorEl}
+									className={classes.menu}
 									anchorOrigin={{
 										vertical: 'top',
 										horizontal: 'right',
@@ -385,32 +510,6 @@ const MenuBar = ({ children }) => {
 								</ListItem>
 								<ListItem
 									button
-									key={'Login'}
-									component={Link}
-									to='/login'
-									selected={selectedItem === 'login'}
-									onClick={(event) => handleListItemClick(event, 'login')}
-								>
-									<ListItemIcon>
-										<AccountBox />
-									</ListItemIcon>
-									<ListItemText primary={'Login'} />
-								</ListItem>
-								<ListItem
-									button
-									key={'Register'}
-									component={Link}
-									to='/register'
-									selected={selectedItem === 'register'}
-									onClick={(event) => handleListItemClick(event, 'register')}
-								>
-									<ListItemIcon>
-										<PersonAdd />
-									</ListItemIcon>
-									<ListItemText primary={'Register'} />
-								</ListItem>
-								<ListItem
-									button
 									key={'Patients'}
 									component={Link}
 									to='/patients'
@@ -424,6 +523,25 @@ const MenuBar = ({ children }) => {
 								</ListItem>
 							</List>
 						</Drawer>
+						<div className={classes.hidden}>
+							{Object.keys(errors).length > 0 &&
+								Object.values(errors).map((value) => {
+									return store.addNotification({
+										title: 'Error',
+										message: value,
+										type: 'danger',
+										insert: 'bottom',
+										container: 'bottom-right',
+										animationIn: ['animated', 'slideInRight'],
+										animationOut: ['animated', 'slideOutDown'],
+										dismiss: {
+											duration: 5000,
+											onScreen: false,
+											showIcon: true,
+										},
+									});
+								})}
+						</div>
 						<main className={classes.content}>
 							<div className={classes.toolbar} />
 							{children}
