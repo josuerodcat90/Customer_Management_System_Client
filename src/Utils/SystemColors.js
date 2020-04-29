@@ -15,3 +15,20 @@ export const systemColors = [
 	'#455A64',
 	'#333333',
 ];
+
+export const randomColors = [
+	'#f44336',
+	'#e91e63',
+	'#9c27b0',
+	'#2196f3',
+	'#03a9f4',
+	'#00bcd4',
+	'#009688',
+	'#4caf50',
+	'#8bc34a',
+	'#cddc39',
+	'#ffeb3b',
+	'#ffc107',
+	'#ff9800',
+	'#ff5722',
+];
