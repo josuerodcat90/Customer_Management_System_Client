@@ -1,15 +1,26 @@
 import React, { useState, useContext } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
+import {
+	Avatar,
+	Button,
+	CssBaseline,
+	TextField,
+	Paper,
+	Box,
+	Grid,
+	Backdrop,
+	CircularProgress,
+	Typography,
+	InputAdornment,
+	IconButton,
+} from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import {
+	LockOutlined,
+	AccountCircle,
+	Visibility,
+	VisibilityOff,
+	NoEncryptionOutlined,
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { LOGIN_USER_MUTATION } from '../Utils/Mutations';
@@ -34,12 +45,15 @@ const useStyles = makeStyles((theme) => ({
 		zIndex: theme.zIndex.drawer + 1,
 		color: '#fff',
 	},
-	hidden: {
-		display: 'none',
+	loginIcons: {
+		color: theme.palette.common.white,
+	},
+	alert: {
+		marginBottom: '5px',
 	},
 	links: {
 		textDecoration: 'none',
-		color: theme.palette.primary.main,
+		color: theme.palette.common.white,
 	},
 	image: {
 		backgroundImage:
@@ -75,6 +89,7 @@ const Login = (props) => {
 	const classes = useStyles();
 	const context = useContext(AuthContext);
 	const [open, setOpen] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 	const [errors, setErrors] = useState({});
 
 	const { handleChange, handleSubmit, values } = useForm(registerUserCallback, {
@@ -102,6 +117,7 @@ const Login = (props) => {
 					duration: 4000,
 					onScreen: true,
 					pauseOnHover: true,
+					showIcon: true,
 				},
 			});
 		},
@@ -120,6 +136,10 @@ const Login = (props) => {
 	const resetErrors = () => {
 		setErrors({});
 		setOpen(false);
+	};
+
+	const handleShowPassword = () => {
+		setShowPassword(!showPassword);
 	};
 
 	const Copyright = () => {
@@ -144,44 +164,70 @@ const Login = (props) => {
 		<>
 			<Grid container component='main' className={classes.root}>
 				<CssBaseline />
-				<Grid item xs={false} sm={4} md={7} className={classes.image} />
-				<Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+				<Grid item xs={false} sm={3} md={8} className={classes.image} />
+				<Grid item xs={12} sm={9} md={4} component={Paper} elevation={6} square>
 					<div className={classes.paper}>
 						<Avatar className={classes.avatar}>
-							<LockOutlinedIcon />
+							<LockOutlined />
 						</Avatar>
 						<Typography component='h1' variant='h5'>
 							Sign in
 						</Typography>
 						<form className={classes.form} noValidate onSubmit={handleSubmit}>
-							<TextField
-								variant='outlined'
-								margin='normal'
-								required
-								fullWidth
-								id='email'
-								label='Email Address'
-								name='email'
-								autoComplete='email'
-								autoFocus
-								onFocus={resetErrors}
-								error={errors.email ? true : false}
-								onChange={handleChange}
-							/>
-							<TextField
-								variant='outlined'
-								margin='normal'
-								required
-								fullWidth
-								name='password'
-								label='Password'
-								type='password'
-								id='password'
-								onFocus={resetErrors}
-								autoComplete='current-password'
-								error={errors.password ? true : false}
-								onChange={handleChange}
-							/>
+							<Grid container spacing={2} alignItems='flex-end'>
+								<Grid item xs={1}>
+									<AccountCircle className={classes.loginIcons} />
+								</Grid>
+								<Grid item xs={11}>
+									<TextField
+										margin='normal'
+										required
+										size='small'
+										fullWidth
+										id='email'
+										label='Email Address'
+										name='email'
+										autoComplete='email'
+										autoFocus
+										onFocus={resetErrors}
+										error={errors.email ? true : false}
+										onChange={handleChange}
+									/>
+								</Grid>
+							</Grid>
+							<Grid container spacing={1} alignItems='flex-end'>
+								<Grid item xs={1}>
+									{showPassword ? (
+										<NoEncryptionOutlined className={classes.loginIcons} />
+									) : (
+										<LockOutlined className={classes.loginIcons} />
+									)}
+								</Grid>
+								<Grid item xs={11}>
+									<TextField
+										margin='normal'
+										required
+										fullWidth
+										name='password'
+										label='Password'
+										type={showPassword ? 'text' : 'password'}
+										id='password'
+										onFocus={resetErrors}
+										autoComplete='current-password'
+										error={errors.password ? true : false}
+										onChange={handleChange}
+										InputProps={{
+											endAdornment: (
+												<InputAdornment position='end'>
+													<IconButton onClick={handleShowPassword}>
+														{showPassword ? <Visibility /> : <VisibilityOff />}
+													</IconButton>
+												</InputAdornment>
+											),
+										}}
+									/>
+								</Grid>
+							</Grid>
 							<Button
 								type='submit'
 								fullWidth
@@ -191,25 +237,12 @@ const Login = (props) => {
 							>
 								Sign In
 							</Button>
-							<div className={classes.hidden}>
-								{Object.keys(errors).length > 0 &&
-									Object.values(errors).map((value) => {
-										return store.addNotification({
-											title: 'Error',
-											message: value,
-											type: 'danger',
-											insert: 'bottom',
-											container: 'bottom-right',
-											animationIn: ['animated', 'slideInUp'],
-											animationOut: ['animated', 'slideOutDown'],
-											dismiss: {
-												duration: 5000,
-												onScreen: false,
-												showIcon: true,
-											},
-										});
-									})}
-							</div>
+							{Object.keys(errors).length > 0 &&
+								Object.values(errors).map((value) => (
+									<Alert className={classes.alert} variant='filled' severity='error'>
+										{value}
+									</Alert>
+								))}
 							{Object.values(errors).length < 1 && (
 								<Backdrop
 									className={classes.backdrop}
@@ -221,33 +254,37 @@ const Login = (props) => {
 									<CircularProgress color='inherit' />
 								</Backdrop>
 							)}
-							<Grid container>
-								<Grid item xs>
-									<Typography
-										className={classes.links}
-										component={Link}
-										to='/recover'
-										color='primary'
-										variant='body2'
-									>
-										Forgot password?
-									</Typography>
+							{Object.values(errors).length < 1 && (
+								<Grid container>
+									<Grid item xs>
+										<Typography
+											className={classes.links}
+											component={Link}
+											to='/recover'
+											color='primary'
+											variant='body2'
+										>
+											Forgot password?
+										</Typography>
+									</Grid>
+									<Grid item>
+										<Typography
+											className={classes.links}
+											color='primary'
+											component={Link}
+											to='/register'
+											variant='body2'
+										>
+											Don't have an account? Sign Up
+										</Typography>
+									</Grid>
 								</Grid>
-								<Grid item>
-									<Typography
-										className={classes.links}
-										color='primary'
-										component={Link}
-										to='/register'
-										variant='body2'
-									>
-										Don't have an account? Sign Up
-									</Typography>
-								</Grid>
-							</Grid>
-							<Box mt={5}>
-								<Copyright />
-							</Box>
+							)}
+							{Object.values(errors).length < 1 && (
+								<Box mt={5}>
+									<Copyright />
+								</Box>
+							)}
 						</form>
 					</div>
 				</Grid>

@@ -218,12 +218,15 @@ const MenuBar = ({ children }) => {
 	const [changeSysColor] = useMutation(CHANGE_USER_COLOR_MUTATION, {
 		update(_, { data: { changeSysColor: userData } }) {
 			context.login(userData);
+			const notiID =
+				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
 			store.addNotification({
+				id: notiID,
 				title: 'System Color',
 				message: 'System Color changed',
 				type: 'info',
-				insert: 'top',
+				insert: 'bottom',
 				showIcon: true,
 				container: 'bottom-right',
 				animationIn: ['animated', 'slideInUp'],
@@ -232,6 +235,7 @@ const MenuBar = ({ children }) => {
 					duration: 2000,
 					onScreen: true,
 					pauseOnHover: false,
+					showIcon: true,
 				},
 			});
 		},
@@ -249,12 +253,15 @@ const MenuBar = ({ children }) => {
 			context.login(userData);
 			const { userTheme } = userData;
 			const message = <strong>{`Dark mode ${userTheme ? 'ON' : 'OFF'}`}</strong>;
+			const notiID =
+				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
 			store.addNotification({
+				id: notiID,
 				title: 'Dark Mode',
 				message: message,
 				type: 'info',
-				insert: 'top',
+				insert: 'bottom',
 				showIcon: true,
 				container: 'bottom-right',
 				animationIn: ['animated', 'slideInUp'],
@@ -263,6 +270,7 @@ const MenuBar = ({ children }) => {
 					duration: 2000,
 					onScreen: true,
 					pauseOnHover: false,
+					showIcon: true,
 				},
 			});
 		},
