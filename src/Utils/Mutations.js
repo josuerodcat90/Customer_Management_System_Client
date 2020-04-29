@@ -9,6 +9,7 @@ export const LOGIN_USER_MUTATION = gql`
 			userIcon
 			userColor
 			userTheme
+			email
 			range
 			bachTitle
 			token
@@ -39,6 +40,7 @@ export const CREATE_USER_MUTATION = gql`
 			userIcon
 			userColor
 			userTheme
+			email
 			range
 			bachTitle
 			token
