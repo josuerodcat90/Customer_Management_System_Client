@@ -41,6 +41,9 @@ const useStyles = makeStyles((theme) => ({
 	errors: {
 		padding: theme.spacing(3),
 	},
+	show: {
+		cursor: 'pointer',
+	},
 	backdrop: {
 		zIndex: theme.zIndex.drawer + 1,
 		color: '#fff',
@@ -218,9 +221,11 @@ const Login = (props) => {
 										InputProps={{
 											endAdornment: (
 												<InputAdornment position='end'>
-													<IconButton onClick={handleShowPassword}>
-														{showPassword ? <Visibility /> : <VisibilityOff />}
-													</IconButton>
+													{showPassword ? (
+														<Visibility className={classes.show} onClick={handleShowPassword} />
+													) : (
+														<VisibilityOff className={classes.show} onClick={handleShowPassword} />
+													)}
 												</InputAdornment>
 											),
 										}}

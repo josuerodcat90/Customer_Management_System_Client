@@ -34,6 +34,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { CREATE_USER_MUTATION } from '../Utils/Mutations';
 
 import { AuthContext } from '../Context/Auth';
+import { capitalize } from '../Utils/UtilFunctions';
 import { useForm } from '../Utils/Hooks';
 
 const useStyles = makeStyles((theme) => ({
@@ -58,6 +59,9 @@ const useStyles = makeStyles((theme) => ({
 		padding: '15px',
 		flexDirection: 'column',
 		alignItems: 'center',
+	},
+	show: {
+		cursor: 'pointer',
 	},
 	copyright: {
 		padding: '15px',
@@ -137,7 +141,11 @@ const Register = (props) => {
 		onError(err) {
 			setErrors(err.graphQLErrors[0].extensions.exception.errors);
 		},
-		variables: values,
+		variables: {
+			...values,
+			firstname: capitalize(values.firstname),
+			lastname: capitalize(values.lastname),
+		},
 	});
 
 	function registerUser() {
@@ -175,8 +183,8 @@ const Register = (props) => {
 
 	return (
 		<Grid container className={classes.root}>
-			<Grid item direction='column' xs={false} sm={false} md={3}></Grid>
-			<Grid item direction='column' xs={12} sm={12} md={6}>
+			<Grid item xs={false} sm={false} md={3}></Grid>
+			<Grid item xs={12} sm={12} md={6}>
 				<div className={classes.mainContainer}>
 					<Container maxWidth='xs' component={Paper} elevation={6}>
 						<CssBaseline />
@@ -261,9 +269,14 @@ const Register = (props) => {
 											InputProps={{
 												endAdornment: (
 													<InputAdornment position='end'>
-														<IconButton onClick={handleShowPassword}>
-															{showPassword ? <Visibility /> : <VisibilityOff />}
-														</IconButton>
+														{showPassword ? (
+															<Visibility className={classes.show} onClick={handleShowPassword} />
+														) : (
+															<VisibilityOff
+																className={classes.show}
+																onClick={handleShowPassword}
+															/>
+														)}
 													</InputAdornment>
 												),
 											}}
@@ -343,7 +356,7 @@ const Register = (props) => {
 					</Container>
 				</div>
 			</Grid>
-			<Grid item direction='column' xs={false} sm={false} md={3}></Grid>
+			<Grid item xs={false} sm={false} md={3}></Grid>
 		</Grid>
 	);
 };
