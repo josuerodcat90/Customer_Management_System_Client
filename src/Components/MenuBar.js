@@ -27,6 +27,7 @@ import {
 	DialogTitle,
 	DialogContent,
 } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import {
 	ChevronLeft,
 	Close,
@@ -37,8 +38,8 @@ import {
 	Brightness7,
 	Brightness4,
 } from '@material-ui/icons';
-import { AuthContext } from '../Context/Auth';
 import MenuIcon from '@material-ui/icons/Menu';
+import { AuthContext } from '../Context/Auth';
 import { Link } from 'react-router-dom';
 import { systemColors } from '../Utils/SystemColors';
 import UserThemeProvider from './UserThemeProvider';
@@ -51,7 +52,6 @@ import 'animate.css';
 import { CHANGE_USER_COLOR_MUTATION, CHANGE_USER_THEME_MUTATION } from '../Utils/Mutations';
 
 const drawerWidth = 180;
-
 const useStyles = makeStyles((theme) => ({
 	root: {
 		display: 'flex',
@@ -197,7 +197,6 @@ const MenuBar = ({ children }) => {
 	const { user, logout } = useContext(AuthContext);
 	const [sysTheme, setSysTheme] = useState(false);
 	const [sysColor, setSysColor] = useState('');
-	const [errors, setErrors] = useState({});
 	const pathname = window.location.pathname;
 	const path = pathname === '/' ? 'home' : pathname.substr(1);
 	const [open, setOpen] = useState(false);
@@ -221,26 +220,50 @@ const MenuBar = ({ children }) => {
 			const notiID =
 				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
+			const message = (
+				<Alert fullWidth elevation={6} variant='filled' severity='success'>
+					System Color Changed
+				</Alert>
+			);
+
 			store.addNotification({
 				id: notiID,
-				title: 'System Color',
-				message: 'System Color changed',
-				type: 'info',
+				content: message,
 				insert: 'bottom',
-				showIcon: true,
 				container: 'bottom-right',
-				animationIn: ['animated', 'slideInUp'],
+				animationIn: ['animated', 'slideInRight'],
 				animationOut: ['animated', 'slideOutDown'],
+				width: 214,
 				dismiss: {
-					duration: 2000,
-					onScreen: true,
-					pauseOnHover: false,
-					showIcon: true,
+					duration: 3000,
 				},
 			});
 		},
-		onError(err) {
-			setErrors(err.graphQLErrors[0].extensions.exception.errors);
+		onError() {
+			const notiID =
+				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+			const eMessage = (
+				<Alert fullWidth elevation={6} variant='filled' severity='error'>
+					Cannot change system color in the database, please verify your internet connection!
+				</Alert>
+			);
+
+			setSysColor(user.userColor);
+
+			store.addNotification({
+				id: notiID,
+				content: eMessage,
+				insert: 'bottom',
+				container: 'bottom-right',
+				animationIn: ['animated', 'slideInRight'],
+				animationOut: ['animated', 'slideOutDown'],
+				width: 280,
+				dismiss: {
+					duration: 5000,
+					pauseOnHover: true,
+				},
+			});
 		},
 		variables: {
 			userId: user ? user._id : '',
@@ -252,30 +275,52 @@ const MenuBar = ({ children }) => {
 		update(_, { data: { changeSysTheme: userData } }) {
 			context.login(userData);
 			const { userTheme } = userData;
-			const message = <strong>{`Dark mode ${userTheme ? 'ON' : 'OFF'}`}</strong>;
 			const notiID =
 				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+			const sMessage = (
+				<Alert fullWidth elevation={6} variant='filled' severity='success'>
+					{`Dark mode ${userTheme ? 'ON' : 'OFF'}`}
+				</Alert>
+			);
 
 			store.addNotification({
 				id: notiID,
-				title: 'Dark Mode',
-				message: message,
-				type: 'info',
+				content: sMessage,
 				insert: 'bottom',
-				showIcon: true,
 				container: 'bottom-right',
-				animationIn: ['animated', 'slideInUp'],
+				animationIn: ['animated', 'slideInRight'],
 				animationOut: ['animated', 'slideOutDown'],
+				width: userTheme ? 162 : 170,
 				dismiss: {
-					duration: 2000,
-					onScreen: true,
-					pauseOnHover: false,
-					showIcon: true,
+					duration: 3000,
 				},
 			});
 		},
 		onError(err) {
-			setErrors(err.graphQLErrors[0].extensions.exception.errors);
+			const notiID =
+				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+			const eMessage = (
+				<Alert fullWidth elevation={6} variant='filled' severity='error'>
+					Cannot change system theme in the database, please verify your internet connection!
+				</Alert>
+			);
+
+			setSysTheme(user.userTheme);
+
+			store.addNotification({
+				id: notiID,
+				content: eMessage,
+				insert: 'bottom',
+				container: 'bottom-right',
+				animationIn: ['animated', 'slideInRight'],
+				animationOut: ['animated', 'slideOutDown'],
+				width: 280,
+				dismiss: {
+					duration: 5000,
+					pauseOnHover: true,
+				},
+			});
 		},
 		variables: {
 			userId: user ? user._id : '',
@@ -531,25 +576,6 @@ const MenuBar = ({ children }) => {
 								</ListItem>
 							</List>
 						</Drawer>
-						<div className={classes.hidden}>
-							{Object.keys(errors).length > 0 &&
-								Object.values(errors).map((value) => {
-									return store.addNotification({
-										title: 'Error',
-										message: value,
-										type: 'danger',
-										insert: 'bottom',
-										container: 'bottom-right',
-										animationIn: ['animated', 'slideInRight'],
-										animationOut: ['animated', 'slideOutDown'],
-										dismiss: {
-											duration: 5000,
-											onScreen: false,
-											showIcon: true,
-										},
-									});
-								})}
-						</div>
 						<main className={classes.content}>
 							<div className={classes.toolbar} />
 							{children}

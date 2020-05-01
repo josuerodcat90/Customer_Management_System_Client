@@ -93,8 +93,8 @@ const Login = (props) => {
 	const [errors, setErrors] = useState({});
 
 	const { handleChange, handleSubmit, values } = useForm(registerUserCallback, {
-		email: '',
-		password: '',
+		email: 'josue@gmail.com',
+		password: 'showdown',
 	});
 
 	const [loginUser] = useMutation(LOGIN_USER_MUTATION, {
@@ -108,16 +108,13 @@ const Login = (props) => {
 				title: `Welcome ${firstname + ' ' + lastname}!`,
 				message: "You're now online",
 				type: 'success',
-				insert: 'top',
-				showIcon: true,
+				insert: 'bottom',
 				container: 'bottom-right',
 				animationIn: ['animated', 'slideInRight'],
 				animationOut: ['animated', 'fadeOut'],
 				dismiss: {
 					duration: 4000,
 					onScreen: true,
-					pauseOnHover: true,
-					showIcon: true,
 				},
 			});
 		},
@@ -184,6 +181,7 @@ const Login = (props) => {
 										required
 										size='small'
 										fullWidth
+										defaultValue={values.email}
 										id='email'
 										label='Email Address'
 										name='email'
@@ -212,6 +210,7 @@ const Login = (props) => {
 										label='Password'
 										type={showPassword ? 'text' : 'password'}
 										id='password'
+										defaultValue={values.password}
 										onFocus={resetErrors}
 										autoComplete='current-password'
 										error={errors.password ? true : false}
