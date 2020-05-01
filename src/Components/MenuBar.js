@@ -50,6 +50,7 @@ import 'react-notifications-component/dist/theme.css';
 import 'animate.css';
 
 import { CHANGE_USER_COLOR_MUTATION, CHANGE_USER_THEME_MUTATION } from '../Utils/Mutations';
+import { capitalizeAll } from '../Utils/UtilFunctions';
 
 const drawerWidth = 180;
 const useStyles = makeStyles((theme) => ({
@@ -164,8 +165,8 @@ const useStyles = makeStyles((theme) => ({
 
 const StyledBadge = withStyles((theme) => ({
 	badge: {
-		backgroundColor: '#44b700',
-		color: '#44b700',
+		backgroundColor: '#44B700',
+		color: '#44B700',
 		boxShadow: `0 0 0 1px ${theme.palette.common.black}`,
 		'&::after': {
 			position: 'absolute',
@@ -249,7 +250,7 @@ const MenuBar = ({ children }) => {
 				</Alert>
 			);
 
-			setSysColor(user.userColor);
+			setSysColor(capitalizeAll(user.userColor));
 
 			store.addNotification({
 				id: notiID,
@@ -329,7 +330,7 @@ const MenuBar = ({ children }) => {
 	});
 
 	const handleColorChange = async (color, event) => {
-		await setSysColor(color.hex);
+		await setSysColor(capitalizeAll(color.hex));
 		changeSysColor();
 	};
 
