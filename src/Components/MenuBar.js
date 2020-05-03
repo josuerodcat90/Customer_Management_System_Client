@@ -44,6 +44,7 @@ import { Link } from 'react-router-dom';
 import { systemColors } from '../Utils/SystemColors';
 import UserThemeProvider from './UserThemeProvider';
 import RandomThemeProvider from './RandomThemeProvider';
+import ConnectionDetector from './ConnectionDetector';
 import { CirclePicker } from 'react-color';
 import { store } from 'react-notifications-component';
 import 'react-notifications-component/dist/theme.css';
@@ -222,7 +223,7 @@ const MenuBar = ({ children }) => {
 				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
 			const message = (
-				<Alert fullWidth elevation={6} variant='filled' severity='success'>
+				<Alert elevation={6} variant='filled' severity='success'>
 					System Color Changed
 				</Alert>
 			);
@@ -279,7 +280,7 @@ const MenuBar = ({ children }) => {
 			const notiID =
 				Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 			const sMessage = (
-				<Alert fullWidth elevation={6} variant='filled' severity='success'>
+				<Alert elevation={6} variant='filled' severity='success'>
 					{`Dark mode ${userTheme ? 'ON' : 'OFF'}`}
 				</Alert>
 			);
@@ -581,6 +582,7 @@ const MenuBar = ({ children }) => {
 							<div className={classes.toolbar} />
 							{children}
 						</main>
+						<ConnectionDetector />
 					</div>
 				</UserThemeProvider>
 			) : (

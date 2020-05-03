@@ -12,7 +12,6 @@ import {
 	Typography,
 	Container,
 	InputAdornment,
-	IconButton,
 } from '@material-ui/core';
 import {
 	AccountCircle,
@@ -127,7 +126,7 @@ const Register = (props) => {
 				type: 'info',
 				insert: 'top',
 				showIcon: true,
-				container: 'top-center',
+				container: 'bottom-right',
 				animationIn: ['animated', 'slideInDown'],
 				animationOut: ['animated', 'slideOutUp'],
 				dismiss: {
