@@ -11,6 +11,23 @@ export const GET_APPOINTMENTS_QUERY = gql`
 			start
 			title
 			allDay
+			patient {
+				_id
+				firstname
+				lastname
+			}
+			doctor {
+				_id
+				firstname
+				lastname
+			}
+			createdBy {
+				_id
+				firstname
+				lastname
+			}
+			createdAt
+			updatedAt
 		}
 	}
 `;

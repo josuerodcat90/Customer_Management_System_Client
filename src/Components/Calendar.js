@@ -1,11 +1,13 @@
-import React, { useState, createRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import { Paper, CssBaseline } from '@material-ui/core';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
 import momentPlugin from '@fullcalendar/moment';
+import 'moment/locale/es-us';
 
 ///Styles for fullcalendar Plugins
 import '@fullcalendar/core/main.min.css';
@@ -16,7 +18,6 @@ import { GET_APPOINTMENTS_QUERY } from '../Utils/Queries';
 import CalendarPlaceholder from '../Placeholders/CalendarPlaceholder';
 
 const Calendar = () => {
-	const calendarComponentRef = createRef();
 	const [appointments, setAppointments] = useState([]);
 	const [calendarWeekends, setWeekends] = useState(true);
 	const { loading, data } = useQuery(GET_APPOINTMENTS_QUERY);
@@ -27,21 +28,28 @@ const Calendar = () => {
 		}
 	}, [data]);
 
-	const gotoPast = () => {
-		let calendarApi = calendarComponentRef.current.getApi();
-		calendarApi.gotoDate('1990-04-27');
-	};
-
 	const handleDateClick = (arg) => {
 		alert(arg.dateStr);
 	};
 
 	const handleEventClick = (info) => {
-		alert('Event: ' + info.event.title);
-		alert('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
-		alert('ClassName: ' + info.event.className);
-		alert('View: ' + info.view.type);
-		info.el.style.borderColor = 'red';
+		info.jsEvent.preventDefault();
+		const evento = info.event;
+		alert('Event: ' + evento.title);
+		alert('Description: ' + evento.extendedProps.description);
+		alert(
+			'Patient: ' +
+				evento.extendedProps.patient.firstname +
+				' ' +
+				evento.extendedProps.patient.lastname
+		);
+		alert(
+			'Doctor: ' +
+				evento.extendedProps.doctor.firstname +
+				' ' +
+				evento.extendedProps.doctor.lastname
+		);
+		alert('Start: ' + evento.start);
 	};
 
 	const toggleWeekends = () => {
@@ -62,22 +70,28 @@ const Calendar = () => {
 								text: 'Toggle Weekends',
 								click: toggleWeekends,
 							},
-							custom2: {
-								text: 'Go to Date',
-								click: gotoPast,
-							},
 						}}
+						locale='es-us'
 						header={{
 							left: 'prev,next custom1 today',
 							center: 'title',
-							right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek custom2',
+							right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
 						}}
-						plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, momentPlugin]}
-						ref={calendarComponentRef}
+						businessHours={{
+							daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+							startTime: '08:00',
+							endTime: '18:00',
+						}}
+						plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, momentPlugin, listPlugin]}
 						weekends={calendarWeekends}
 						dateClick={handleDateClick}
 						eventClick={handleEventClick}
 						events={appointments}
+						firstDay={1}
+						eventLimit={true}
+						navLinks={true}
+						nowIndicator={true}
+						weekNumbers={true}
 					/>
 				)}
 			</Paper>
