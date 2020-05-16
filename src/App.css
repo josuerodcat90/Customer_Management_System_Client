@@ -6,16 +6,25 @@
 
 .Allday {
 	background-color: fuchsia;
+	border: #fff 0.5px solid;
 	color: white;
 }
 
 .Confirmada {
 	background-color: green;
+	border: #fff 0.5px solid;
 	color: white;
 }
 
 .Cancelada {
 	background-color: red;
+	border: #fff 0.5px solid;
+	color: white;
+}
+
+.Movible {
+	background-color: darkcyan;
+	border: #fff 0.5px solid;
 	color: white;
 }
 

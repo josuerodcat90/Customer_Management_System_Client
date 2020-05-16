@@ -94,7 +94,7 @@ const Login = (props) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [errors, setErrors] = useState({});
 
-	const { handleChange, handleSubmit, values } = useForm(registerUserCallback, {
+	const { handleChange, handleSubmit, values } = useForm(loginUserCallback, {
 		email: 'josue@gmail.com',
 		password: 'showdown',
 	});
@@ -126,7 +126,7 @@ const Login = (props) => {
 		variables: values,
 	});
 
-	function registerUserCallback() {
+	function loginUserCallback() {
 		loginUser();
 		setErrors({});
 		setOpen(!open);
