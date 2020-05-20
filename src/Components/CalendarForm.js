@@ -1,37 +1,16 @@
-import React from 'react';
-import { Button, Grid, TextField, makeStyles } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import React, { useState, useEffect } from 'react';
+import { Button, Grid, TextField, makeStyles, InputAdornment } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
+import { Title, Person, Phone } from '@material-ui/icons';
+
+import { useQuery } from '@apollo/react-hooks';
 
 import { useForm } from '../Utils/Hooks';
+import { GET_SHORT_PATIENTS_QUERY } from '../Utils/Queries';
 
 const useStyles = makeStyles((theme) => ({
-	root: {
-		height: '100vh',
-		backgroundImage:
-			'url(https://source.unsplash.com/featured/?developer,code,software,web,javascript)',
-		backgroundRepeat: 'no-repeat',
-		backgroundColor:
-			theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
-		backgroundSize: 'cover',
-		backgroundPosition: 'center',
-	},
 	loginIcons: {
 		color: theme.palette.common.white,
-	},
-	mainContainer: {
-		paddingTop: theme.spacing(9),
-	},
-	paper: {
-		display: 'flex',
-		padding: '15px',
-		flexDirection: 'column',
-		alignItems: 'center',
-	},
-	show: {
-		cursor: 'pointer',
-	},
-	copyright: {
-		padding: '15px',
 	},
 	alert: {
 		marginBottom: '5px',
@@ -39,26 +18,12 @@ const useStyles = makeStyles((theme) => ({
 	errors: {
 		padding: theme.spacing(3),
 	},
-	hidden: {
-		display: 'none',
-	},
-	login: {
-		display: 'flex',
-		flexDirection: 'row',
-		alignContent: 'center',
-	},
-	links: {
-		textDecoration: 'none',
-		color: theme.palette.common.white,
-	},
-	avatar: {
-		margin: theme.spacing(1),
-		backgroundColor: theme.palette.primary.main,
-		color: theme.palette.primary.contrastText,
-	},
 	form: {
 		width: '100%', // Fix IE 11 issue.
 		marginTop: theme.spacing(3),
+	},
+	fields: {
+		margin: theme.spacing(1),
 	},
 	submit: {
 		margin: theme.spacing(3, 0, 2),
@@ -66,12 +31,22 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const CalendarForm = ({ data, action }) => {
+const CalendarForm = ({ event, action }) => {
 	const classes = useStyles();
+	const [patients, setPatients] = useState([]);
+	const { data, loading } = useQuery(GET_SHORT_PATIENTS_QUERY);
+
+	useEffect(() => {
+		if (data) {
+			setPatients(data.getPatients);
+			console.log(data.getPatients);
+		}
+	}, [data]);
 
 	const { handleChange, handleSubmit, values } = useForm(newEventCallback, {
-		title: action === 'new' ? '' : data.title,
-		description: action === 'new' ? '' : data.extendedProps.description,
+		title: action === 'new' ? '' : event.title,
+		patient: action === 'new' ? '' : event.extendedProps.patient,
+		description: action === 'new' ? '' : event.extendedProps.description,
 	});
 
 	function newEventCallback() {
@@ -81,12 +56,13 @@ const CalendarForm = ({ data, action }) => {
 	return (
 		<>
 			<form noValidate onSubmit={handleSubmit}>
-				<Grid container spacing={2} alignItems='flex-end'>
+				<Grid container spacing={1} alignItems='flex-end'>
 					<Grid item xs={1}>
-						<AccountCircle className={classes.loginIcons} />
+						<Title className={classes.loginIcons} />
 					</Grid>
-					<Grid item xs={5}>
+					<Grid item xs={11}>
 						<TextField
+							className={classes.fields}
 							autoComplete='title'
 							name='title'
 							required
@@ -101,9 +77,39 @@ const CalendarForm = ({ data, action }) => {
 							// onChange={handleChange}
 						/>
 					</Grid>
-					<Grid item xs={6}>
+					<Grid item xs={1}>
+						<Person className={classes.loginIcons} />
+					</Grid>
+					<Grid item xs={5}>
+						<Autocomplete
+							id='auto-complete'
+							options={patients.map((option) => option.firstname + ' ' + option.lastname)}
+							autoComplete
+							includeInputInList
+							defaultValue={values.patient.firstname + ' ' + values.patient.lastname}
+							renderInput={(params) => <TextField {...params} label='Patient' margin='normal' />}
+						/>
+					</Grid>
+					<Grid item xs={1}>
+						<Phone className={classes.loginIcons} />
+					</Grid>
+					<Grid item xs={5}>
+						<Autocomplete
+							id='patient-phone'
+							options={patients.map((option) => option.phoneNumber)}
+							autoComplete
+							includeInputInList
+							defaultValue={values.patient.phoneNumber}
+							renderInput={(params) => <TextField {...params} label='Phone' margin='normal' />}
+						/>
+					</Grid>
+					<Grid item xs={12}>
 						<TextField
-							required
+							className={classes.fields}
+							variant='outlined'
+							multiline
+							rows={4}
+							rowsMax={8}
 							fullWidth
 							id='description'
 							label='Description'

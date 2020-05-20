@@ -15,6 +15,7 @@ export const GET_APPOINTMENTS_QUERY = gql`
 				_id
 				firstname
 				lastname
+				phoneNumber
 			}
 			doctor {
 				_id
@@ -64,6 +65,17 @@ export const GET_PATIENTS_QUERY = gql`
 			status
 			createdAt
 			updatedAt
+		}
+	}
+`;
+
+export const GET_SHORT_PATIENTS_QUERY = gql`
+	query {
+		getPatients {
+			_id
+			firstname
+			lastname
+			phoneNumber
 		}
 	}
 `;
