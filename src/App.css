@@ -1,79 +1,38 @@
-.Pendiente {
-	background-color: orange;
-	border: #fff 0.5px solid;
-	color: white;
+.App {
+  text-align: center;
 }
 
-.Allday {
-	background-color: fuchsia;
-	border: #fff 0.5px solid;
-	color: white;
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
 }
 
-.Confirmada {
-	background-color: green;
-	border: #fff 0.5px solid;
-	color: white;
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
-.Cancelada {
-	background-color: red;
-	border: #fff 0.5px solid;
-	color: white;
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
-.Movible {
-	background-color: darkcyan;
-	border: #fff 0.5px solid;
-	color: white;
+.App-link {
+  color: #61dafb;
 }
 
-.Calendar {
-	display: flex !important;
-	align-self: end !important;
-	padding: 15px !important;
-	max-width: 780px !important;
-	max-height: 780px !important;
-}
-
-.fc-today {
-	background: #9933cc !important;
-	color: #fff !important;
-	border-top: #ddd 1px solid !important;
-	border-left: #ddd 1px solid !important;
-	font-weight: bold !important;
-}
-
-.fc-day-top {
-	border-left: #ddd 1px solid !important;
-}
-
-.fc-button-primary {
-	text-transform: capitalize !important;
-	background: #2a9fd6 !important;
-	border: none !important;
-}
-
-.fc-button-active {
-	background: #2180ac !important;
-	text-transform: capitalize !important;
-	border: none !important;
-}
-
-.fc-widget-header,
-.fc-week-number.fc-widget-content {
-	background: #9933cc !important;
-	text-transform: capitalize !important;
-	font-weight: bold !important;
-	border-bottom: #ddd 1px solid !important;
-	color: #fff !important;
-}
-
-.fc-week-number a {
-	color: #fff !important;
-}
-
-.fc-header-toolbar h2 {
-	text-transform: capitalize !important;
-	text-align: center !important;
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
