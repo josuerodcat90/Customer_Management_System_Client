@@ -1,26 +1,35 @@
 import React from 'react';
-import logo from './logo.svg';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
+import { AuthProvider } from './Context/Auth';
+import AuthRoute from './Utils/AuthRoute';
+import UnAuthRoute from './Utils/UnAuthRoute';
+
+import MenuBar from './Components/MenuBar';
+import Home from './Pages/Home';
+import Login from './Pages/Login';
+import Register from './Pages/Register';
+import Appointments from './Pages/Appointments';
+import Patients from './Pages/Patients';
+import NotFound from './Pages/404';
+
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = (props) => (
+	<AuthProvider>
+		<Router>
+			<MenuBar>
+				<Switch>
+					<UnAuthRoute exact path='/' component={Home} />
+					<AuthRoute exact path='/login' component={Login} />
+					<AuthRoute exact path='/register' component={Register} />
+					<UnAuthRoute exact path='/calendar' component={Appointments} />
+					<UnAuthRoute exact path='/patients' component={Patients} />
+					<Route component={NotFound} />
+				</Switch>
+			</MenuBar>
+		</Router>
+	</AuthProvider>
+);
 
 export default App;
