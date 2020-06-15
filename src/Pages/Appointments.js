@@ -1,9 +1,10 @@
 import React from 'react';
+import Calendar from '../Components/Calendar';
 
 const Appointments = () => {
 	return (
 		<div>
-			<h1>Appointments!</h1>
+			<Calendar />
 		</div>
 	);
 };

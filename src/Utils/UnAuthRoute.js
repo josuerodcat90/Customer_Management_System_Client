@@ -3,12 +3,15 @@ import { Route, Redirect } from 'react-router-dom';
 
 import { AuthContext } from '../Context/Auth';
 
-function AuthRoute({ component: Component, ...rest }) {
+function UnAuthRoute({ component: Component, ...rest }) {
 	const { user } = useContext(AuthContext);
 
 	return (
-		<Route {...rest} render={(props) => (user ? <Redirect to='/' /> : <Component {...props} />)} />
+		<Route
+			{...rest}
+			render={(props) => (user ? <Component {...props} /> : <Redirect to='/login' />)}
+		/>
 	);
 }
 
-export default AuthRoute;
+export default UnAuthRoute;
